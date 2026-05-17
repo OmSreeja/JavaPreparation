@@ -85,3 +85,9 @@ When execution hits this instruction at runtime, the JVM uses a bootstrap method
 * [x] Distinction between Anonymous Inner Classes and Lambdas
 * [x] Mastery of bytecode tracking via `invokedynamic`
 
+
+**Functional Interface**
+Think of these four interfaces as simple input-output machines:1. PREDICATE      [ Takes Input ]  -------->  [ Returns boolean ]  (Evaluates a condition)
+2. FUNCTION       [ Takes Input ]  -------->  [ Returns Output  ]  (Transforms data)
+3. CONSUMER       [ Takes Input ]  -------->  [ Returns nothing ]  (Processes/Prints data)
+4. SUPPLIER       [ No Input    ]  -------->  [ Returns Output  ]  (Generates data)
