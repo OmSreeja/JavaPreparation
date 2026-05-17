@@ -1,0 +1,4 @@
+Day 1: Functional Programming & Lambdas (Java 8–11)
+Core Concepts: Functional Interfaces (@FunctionalInterface), Lambda syntax, and anonymous inner classes.
+Built-in Interfaces: Master Predicate<T>, Function<T,R>, Consumer<T>, and Supplier<T>.
+The Optional Class: Avoid NullPointerException. Learn .map(), .flatMap(), .orElse(), and .orElseThrow().
