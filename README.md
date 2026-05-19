@@ -91,3 +91,95 @@ Think of these four interfaces as simple input-output machines:1. PREDICATE     
 2. FUNCTION       [ Takes Input ]  -------->  [ Returns Output  ]  (Transforms data)
 3. CONSUMER       [ Takes Input ]  -------->  [ Returns nothing ]  (Processes/Prints data)
 4. SUPPLIER       [ No Input    ]  -------->  [ Returns Output  ]  (Generates data)
+
+# Day 1: Part 2 – The 4 Core Built-In Functional Interfaces
+
+Java 8 introduced pre-built functional interfaces in the `java.util.function` package to standardize common operations and eliminate repetitive custom interface creation.
+
+---
+
+## 1. Core Interface Breakdown Matrix
+
+
+| Interface Name | Method Signature | Inputs | Outputs | Primary Business Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| **`Predicate<T>`** | `boolean test(T t)` | 1 (`T`) | `boolean` | Data evaluations, condition checks, filtering streams. |
+| **`Function<T, R>`** | `R apply(T t)` | 1 (`T`) | 1 (`R`) | Transforming data structures (e.g., converting Entity to DTO). |
+| **`Consumer<T>`** | `void accept(T t)` | 1 (`T`) | `void` | Termination pipelines, processing tasks, printing logs. |
+| **`Supplier<T>`** | `T get()` | 0 | 1 (`T`) | Lazy loading, factory generation, random token creation. |
+
+---
+
+## 2. Deep Dive & Production Implementations
+
+### A. Predicate<T> (Conditional Check)
+Takes an input, executes structural evaluation, and yields a boolean value.
+```java
+import java.util.function.Predicate;
+
+// Check if Employee salary is greater than 50,000
+Predicate<Employee> isHighEarner = emp -> emp.getSalary() > 50000;
+
+// Chaining Predicates using default methods (.and, .or, .negate)
+Predicate<Employee> isEligibleForTax = isHighEarner.and(emp -> emp.isActive());
+```
+
+### B. Function<T, R> (Data Transformation)
+Maps an incoming object type directly into an outgoing structure.
+```java
+import java.util.function.Function;
+
+// Converts a database User entity into a lightweight safe UserDTO
+Function<User, UserDTO> userConverter = user -> {
+    UserDTO dto = new UserDTO();
+    dto.setUsername(user.getUsername());
+    dto.setEmail(user.getEmail());
+    return dto;
+};
+
+UserDTO cleanData = userConverter.apply(dbUserEntity);
+```
+
+### C. Consumer<T> (End Execution)
+Accepts transactional objects and finishes logic flow without returning values.
+```java
+import java.util.function.Consumer;
+
+// Logs security access tracking directly into system files
+Consumer<String> securityAuditLog = threatMsg -> System.out.println("WARN AUDIT: " + threatMsg);
+
+securityAuditLog.accept("Unauthorized connection attempt intercepted at port 8080.");
+```
+
+### D. Supplier<T> (Factory/Lazy Generation)
+Maintains zero parameter inputs while supplying target instances dynamically on-demand.
+```java
+import java.util.function.Supplier;
+import java.util.UUID;
+
+// Supplying unique string transaction IDs automatically
+Supplier<String> trackingIdSupplier = () -> UUID.randomUUID().toString();
+
+String correlationId = trackingIdSupplier.get();
+```
+
+---
+
+## 3. High-Performance Interview Optimizations
+
+### The Primitive Autoboxing Problem
+Using generic interfaces like `Predicate<Integer>` or `Supplier<Double>` triggers massive runtime overhead. The JVM continuously boxes primitive fields (`int`, `double`) into wrapper object variants (`Integer`, `Double`), choking Heap utilization in large scale operations.
+
+### The Solution: Use Specialized Primitive Interfaces
+Always prefer performance-optimized primitive alternatives in high-volume application structures:
+* **Instead of `Predicate<Integer>`** $\rightarrow$ Use **`IntPredicate`**
+* **Instead of `Consumer<Long>`** $\rightarrow$ Use **`LongConsumer`**
+* **Instead of `Supplier<Double>`** $\rightarrow$ Use **`DoubleSupplier`**
+
+### Managing Multiple Inputs: Bi-Variants
+When single parameter functions are insufficient, leverage built-in multi-parameter templates:
+* **`BiPredicate<T, U>`**: Takes two input variables, returns boolean.
+* **`BiFunction<T, U, R>`**: Takes two input variables, returns a customized mapped result.
+* **`BiConsumer<T, U>`**: Takes two input variables, processes functionality with void return.
+*(Note: There is no BiSupplier, as single execution paths return exactly one functional payload).*
+
